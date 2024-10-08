@@ -19,7 +19,7 @@ export default class Miner {
         // this._treasury = null;
         // this._movePackage = null;
 
-        this._nonceFinder = new NonceFinder({ name: 'SIUU' });
+        this._nonceFinder = new NonceFinder({ name: 'META' });
 
         this._config = null;
         this._movePackage = null;
@@ -34,7 +34,7 @@ export default class Miner {
         this.__checkObjectsPromise = new Promise((res)=>{ this.__checkObjectsPromiseResolver = res; });
 
         if (!this._configId || !this._packageId || !this._buses) {
-            throw new Error('SIUU | configId, packageId are required');
+            throw new Error('META | configId, packageId are required');
         }
 
         const SuiObject = suidouble.SuiObject;
@@ -68,7 +68,7 @@ export default class Miner {
 
         // check for owned objects
         if (this._suiMaster._debug) {
-            console.log('SIUU | Trying to find the miner object already registered on the blockchain....');
+            console.log('META | Trying to find the miner object already registered on the blockchain....');
         }
         const paginated = await this._movePackage.modules.miner.getOwnedObjects({ typeName: 'Miner' });
         let miner = null;
@@ -76,7 +76,7 @@ export default class Miner {
 
         if (miner) {
             if (this._suiMaster._debug) {
-                console.log('SIUU | It is there, id is: ', miner.id);
+                console.log('META | It is there, id is: ', miner.id);
             }
             return miner;
         }
@@ -85,7 +85,7 @@ export default class Miner {
 
         await this._movePackage.modules.miner.moveCall('register', []);
 
-        console.log('SIUU | Miner succesfully registered');
+        console.log('META | Miner succesfully registered');
         await new Promise((res)=>{ setTimeout(res, 2000); });
 
         return await this.getOrCreateMiner();
@@ -135,7 +135,7 @@ export default class Miner {
             try {
                 this.hasBlockInfoChanged(currentHash)
                     .then((changed)=>{
-                        console.log('SIUU | block hash changed', changed);
+                        console.log('META | block hash changed', changed);
                         if (changed) {
                             isOutdated = true;
                             this._nonceFinder.pleaseStop();
@@ -153,12 +153,12 @@ export default class Miner {
             nonce = await this._nonceFinder.findValidNonce(preparedHash, difficultyAsTarget);
 
             if (nonce !== null) {
-                console.log('SIUU | valid nonce '+nonce+' found in '+((new Date()).getTime() - startFindingNonceAt)+'ms');
+                console.log('META | valid nonce '+nonce+' found in '+((new Date()).getTime() - startFindingNonceAt)+'ms');
                 const success = await this.submit(nonce, bus, miner);
                 if (success) {
                     foundValid = true;
                 } else {
-                    console.log('SIUU | blockInfo was wrong!!!');
+                    console.log('META | blockInfo was wrong!!!');
                     nonce = nonce + 1;
 
                     miner = await this.getOrCreateMiner();
@@ -272,13 +272,13 @@ export default class Miner {
             });
     
             if (r && r.effects && r.effects.status && r.effects.status.status && r.effects.status.status == 'success') {
-                console.log('SIUU | valid nonce submited');
+                console.log('META | valid nonce submited');
                 return true;
             } else {
-                console.log('SIUU | can not submit nonce');
+                console.log('META | can not submit nonce');
             }
         } catch (e) {
-            console.log('SIUU | can not submit nonce');
+            console.log('META | can not submit nonce');
             console.error(e);
         }
 
